@@ -1,0 +1,95 @@
+<template>
+  <v-data-table
+      :headers="headers"
+      :items="data"
+      item-key="data.id"
+      :sort-by="[]"
+      multi-sort
+      class="elevation-1"
+    >
+      <template v-slot:item.actions="{ item }">
+        <v-icon
+          small
+          class="mr-2"
+          @click="editItem(item)"
+        >
+          edit
+        </v-icon>
+        <v-icon
+          small
+          @click="deleteItem(item)"
+        >
+          delete
+        </v-icon>
+      </template>
+    </v-data-table>
+</template>
+
+<script>
+/* eslint-disable no-alert */
+
+export default {
+  name: 'ListChallenges',
+
+  data() {
+    return {
+      data: [],
+
+      search: '',
+
+      headers: [
+        {
+          text: 'Datum', align: 'left', sortable: true, value: 'dateStart', width: '160',
+        },
+        {
+          text: 'Titel', align: 'left', sortable: true, value: 'title',
+        },
+        {
+          text: 'Body', align: 'left', sortable: true, value: 'body',
+        },
+        { text: 'Actions', value: 'actions', sortable: false },
+      ],
+    };
+  },
+
+  async created() {
+    console.clear();
+
+    const resp = await fetch(`${this.$URL}/challenges`).catch(console.error);
+
+    if (!resp) {
+      alert('Could not load challenges.');
+    }
+
+    const data = await resp.json();
+
+    this.data = data.map(
+      ({
+        // eslint-disable-next-line camelcase
+        id, title, body, date_start,
+      }) => ({
+        id, title, body, dateStart: new Date(date_start).toLocaleString(),
+      }),
+    );
+  },
+
+  methods: {
+    editItem(item) {
+      this.$router.push({
+        name: 'EditChallenge',
+        params: item,
+      });
+    },
+
+    deleteItem(item) {
+      // eslint-disable-next-line no-restricted-globals
+      if (confirm('Are you sure you want to delete this item?')) {
+        console.info('Delete Item: %s', item.id);
+      }
+    },
+  },
+};
+</script>
+
+<style>
+</style>

@@ -1,3 +1,5 @@
+const URL = 'https://e3bzj7x3ck.execute-api.eu-west-1.amazonaws.com/v1';
+
 new Vue({
   data() {
     return {
@@ -34,6 +36,24 @@ new Vue({
       }
 
       reader.readAsDataURL(file);
+    },
+
+    async submitForm(event) {
+      const result = await fetch(`${URL}/challenges`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          title: this.title,
+          body: this.body,
+          img: this.img,
+          date: this.dateAsUnix,
+        }),
+      }).catch(console.error);
+      
+      
+      console.info(await result.json());
     }
   },
 }).$mount('#app');
