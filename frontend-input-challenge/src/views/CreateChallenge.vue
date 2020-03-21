@@ -48,6 +48,7 @@
       <v-btn
         :disabled="!canSave"
         color="secondary"
+        :loading="loading"
         class="mr-4"
         @click="save"
       >
@@ -64,6 +65,7 @@ export default {
   data() {
     return {
       menu: false,
+      loading: false,
 
       title: 'Challenge 1',
       body: 'Really hard challenge',
@@ -87,8 +89,6 @@ export default {
 
   methods: {
     fileUpload(event) {
-      console.info(event);
-
       const [file] = event;
 
       if (!file) return;
@@ -106,6 +106,7 @@ export default {
 
     async save() {
       /* eslint-disable no-alert */
+      this.loading = true;
 
       const result = await fetch(`${this.$URL}/challenges`, {
         method: 'PUT',
@@ -130,10 +131,9 @@ export default {
         this.img = '';
         this.$refs.img.reset();
       }
+
+      this.loading = false;
     },
   },
 };
 </script>
-
-<style>
-</style>

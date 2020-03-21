@@ -68,17 +68,18 @@ export default {
 
       const data = await resp.json();
 
-      this.data = data.map(
+      this.data = data.length > 0 ? data.map(
         ({
           // eslint-disable-next-line camelcase
-          id, title, body, date_start,
+          id, title, body, date_start, img,
         }) => ({
-          id, title, body, dateStart: new Date(date_start).toLocaleString(),
+          id, title, body, dateStart: new Date(date_start).toLocaleString(), img,
         }),
-      );
+      ) : [];
     },
 
     editItem(item) {
+      console.info(item);
       this.$router.push({
         name: 'EditChallenge',
         params: item,

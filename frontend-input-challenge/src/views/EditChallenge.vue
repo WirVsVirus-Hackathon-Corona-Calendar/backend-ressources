@@ -48,6 +48,7 @@
       <v-btn
         :disabled="!canSave"
         color="secondary"
+        :loading="loading"
         class="mr-4"
         @click="save"
       >
@@ -66,8 +67,8 @@ export default {
   data() {
     return {
       menu: false,
+      loading: false,
 
-      eid: this.id,
       etitle: this.title,
       ebody: this.body,
       eimg: this.img,
@@ -109,7 +110,9 @@ export default {
 
     async save() {
       /* eslint-disable no-alert */
-      const resp = await fetch(`${this.$URL}/challenges`, {
+      this.loading = true;
+
+      const resp = await fetch(`${this.$URL}/challenges/${this.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -118,7 +121,7 @@ export default {
           title: this.etitle,
           body: this.ebody,
           img: this.eimg,
-          date: this.edateAsUnix,
+          date: this.dateAsUnix,
         }),
       }).catch(console.error);
 
@@ -128,6 +131,8 @@ export default {
         alert('Successfully edited challenge.');
         this.$router.push({ name: 'ListChallenges' });
       }
+
+      this.loading = false;
     },
   },
 };
