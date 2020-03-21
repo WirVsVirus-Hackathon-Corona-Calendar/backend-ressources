@@ -3,7 +3,7 @@
       :headers="headers"
       :items="data"
       item-key="data.id"
-      :sort-by="[]"
+      sort-by="order"
       multi-sort
       class="elevation-1"
     >
@@ -39,7 +39,7 @@ export default {
 
       headers: [
         {
-          text: 'Datum', align: 'left', sortable: true, value: 'date', width: '160',
+          text: 'Nr', align: 'left', sortable: true, value: 'order', width: '100',
         },
         {
           text: 'Titel', align: 'left', sortable: true, value: 'title',
@@ -60,36 +60,29 @@ export default {
 
   methods: {
     async loadChallenges() {
-      const resp = await fetch(`${this.$URL}/challenges`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${this.$token}`,
-        },
-      }).catch(console.error);
+      const resp = await this.$http.get('/challenges').catch(console.error);
 
       if (!resp) {
         alert('Could not load challenges.');
       }
 
-      const data = await resp.json();
+      const { data } = resp;
 
       // Transform data
       this.data = data.length > 0 ? data.map(
         ({
           /* eslint-disable camelcase */
           id,
+          order,
           title,
           body,
-          date_start,
           icon_url,
         }) => ({
           id,
+          order,
           title,
           body,
-          dateStart: date_start,
           iconUrl: icon_url,
-          date: new Date(date_start).toLocaleDateString(),
         }),
       ) : []; // Save response
     },
@@ -104,8 +97,7 @@ export default {
     async deleteItem(item) {
       // eslint-disable-next-line no-restricted-globals
       if (confirm('Are you sure you want to delete this challenge?')) {
-        const resp = await fetch(`${this.$URL}/challenges/${item.id}`, {
-          method: 'DELETE',
+        const resp = await this.$http.delete(`/challenges/${item.id}`, {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${this.$token}`,

@@ -16,6 +16,12 @@
         required
       ></v-text-field>
 
+      <v-img
+        :src="iconUrl"
+        max-height="200"
+        max-width="200"
+      ></v-img>
+
       <v-file-input
         ref="img"
         accept="image/*"
@@ -24,26 +30,6 @@
         prepend-icon=""
         @change="fileUpload"
       ></v-file-input>
-
-      <v-menu
-        v-model="menu"
-        :close-on-content-click="false"
-        :nudge-right="40"
-        transition="scale-transition"
-        offset-y
-        min-width="290px"
-      >
-        <template v-slot:activator="{ on }">
-          <v-text-field
-            v-model="edate"
-            label="Tag auswählen"
-            append-icon="event"
-            readonly
-            v-on="on"
-          ></v-text-field>
-        </template>
-        <v-date-picker v-model="edate" @input="menu = false"></v-date-picker>
-      </v-menu>
 
       <v-btn
         :disabled="!canSave"
@@ -59,10 +45,12 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: 'EditChallenge',
 
-  props: ['id', 'title', 'body', 'iconUrl', 'dateStart'],
+  props: ['id', 'order', 'title', 'body', 'iconUrl'],
 
   data() {
     return {
@@ -72,21 +60,34 @@ export default {
       etitle: this.title,
       ebody: this.body,
       img: '',
-      edate: new Date(this.dateStart).toISOString().substr(0, 10),
     };
   },
 
   computed: {
-    dateAsUnix() {
-      return new Date(this.edate).getTime() || undefined;
-    },
-
     canSave() {
-      return this.etitle !== ''
-        && this.ebody !== ''
-        && this.edateAsUnix !== ''
-        && this.img !== '';
+      return this.etitle !== '' && this.ebody !== '' && this.img !== '';
     },
+  },
+
+  async created() {
+    /* eslint-disable no-alert */
+    // Use axios to prevent using baseUrl
+    const resp = await axios.get(
+      this.iconUrl,
+      { responseType: 'arraybuffer' },
+    ).catch(console.error);
+
+    if (!resp) {
+      alert('Could not fetch icon');
+
+      // Return to list of challenges
+      this.$router.push({ name: 'ListChallenges' });
+      return;
+    }
+
+    const data = Buffer.from(resp.data, 'binary').toString('base64');
+
+    this.img = data;
   },
 
   methods: {
@@ -112,18 +113,16 @@ export default {
       /* eslint-disable no-alert */
       this.loading = true;
 
-      const resp = await fetch(`${this.$URL}/challenges/${this.id}`, {
-        method: 'PATCH',
+      const resp = await this.$http.patch(`/challenges/${this.id}`, {
+        order: this.order,
+        title: this.etitle,
+        body: this.ebody,
+        img: this.img,
+      }, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.$token}`,
         },
-        body: JSON.stringify({
-          title: this.etitle,
-          body: this.ebody,
-          img: this.img,
-          date_start: this.dateAsUnix,
-        }),
       }).catch(console.error);
 
       if (!resp) {

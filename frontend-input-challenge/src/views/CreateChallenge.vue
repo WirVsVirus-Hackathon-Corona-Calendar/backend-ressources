@@ -25,26 +25,6 @@
         @change="fileUpload"
       ></v-file-input>
 
-      <v-menu
-        v-model="menu"
-        :close-on-content-click="false"
-        :nudge-right="40"
-        transition="scale-transition"
-        offset-y
-        min-width="290px"
-      >
-        <template v-slot:activator="{ on }">
-          <v-text-field
-            v-model="date"
-            label="Tag auswählen"
-            append-icon="event"
-            readonly
-            v-on="on"
-          ></v-text-field>
-        </template>
-        <v-date-picker v-model="date" @input="menu = false"></v-date-picker>
-      </v-menu>
-
       <v-btn
         :disabled="!canSave"
         color="secondary"
@@ -64,26 +44,17 @@ export default {
 
   data() {
     return {
-      menu: false,
       loading: false,
 
       title: 'Challenge 1',
       body: 'Really hard challenge',
       img: '',
-      date: new Date().toISOString().substr(0, 10),
     };
   },
 
   computed: {
-    dateAsUnix() {
-      return new Date(this.date).getTime() || undefined;
-    },
-
     canSave() {
-      return this.title !== ''
-        && this.body !== ''
-        && this.dateAsUnix !== ''
-        && this.img !== '';
+      return this.title !== '' && this.body !== '' && this.img !== '';
     },
   },
 
@@ -108,18 +79,15 @@ export default {
       /* eslint-disable no-alert */
       this.loading = true;
 
-      const result = await fetch(`${this.$URL}/challenges`, {
-        method: 'PUT',
+      const result = await this.$http.put('/challenges', {
+        title: this.title,
+        body: this.body,
+        img: this.img,
+      }, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.$token}`,
         },
-        body: JSON.stringify({
-          title: this.title,
-          body: this.body,
-          img: this.img,
-          date: this.dateAsUnix,
-        }),
       }).catch(console.error);
 
       if (!result) {
