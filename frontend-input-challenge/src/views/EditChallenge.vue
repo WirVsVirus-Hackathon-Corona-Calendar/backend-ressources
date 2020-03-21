@@ -109,12 +109,8 @@ export default {
 
     async save() {
       /* eslint-disable no-alert */
-      this.$router.push({ name: 'ListChallenges' });
-      // eslint-disable-next-line no-constant-condition
-      if (true) return;
-
-      const result = await fetch(`${this.$URL}/challenges`, {
-        method: 'PUT',
+      const resp = await fetch(`${this.$URL}/challenges`, {
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -126,16 +122,10 @@ export default {
         }),
       }).catch(console.error);
 
-      if (!result) {
+      if (!resp) {
         alert('Something went wrong, try again.');
       } else {
         alert('Successfully edited challenge.');
-        this.etitle = '';
-        this.ebody = '';
-        this.edate = '';
-        this.eimg = '';
-        this.$refs.img.reset();
-
         this.$router.push({ name: 'ListChallenges' });
       }
     },

@@ -47,33 +47,37 @@ export default {
         {
           text: 'Body', align: 'left', sortable: true, value: 'body',
         },
-        { text: 'Actions', value: 'actions', sortable: false },
+        {
+          text: 'Actions', value: 'actions', sortable: false,
+        },
       ],
     };
   },
 
   async created() {
-    console.clear();
-
-    const resp = await fetch(`${this.$URL}/challenges`).catch(console.error);
-
-    if (!resp) {
-      alert('Could not load challenges.');
-    }
-
-    const data = await resp.json();
-
-    this.data = data.map(
-      ({
-        // eslint-disable-next-line camelcase
-        id, title, body, date_start,
-      }) => ({
-        id, title, body, dateStart: new Date(date_start).toLocaleString(),
-      }),
-    );
+    this.loadChallenges();
   },
 
   methods: {
+    async loadChallenges() {
+      const resp = await fetch(`${this.$URL}/challenges`).catch(console.error);
+
+      if (!resp) {
+        alert('Could not load challenges.');
+      }
+
+      const data = await resp.json();
+
+      this.data = data.map(
+        ({
+          // eslint-disable-next-line camelcase
+          id, title, body, date_start,
+        }) => ({
+          id, title, body, dateStart: new Date(date_start).toLocaleString(),
+        }),
+      );
+    },
+
     editItem(item) {
       this.$router.push({
         name: 'EditChallenge',
@@ -81,10 +85,22 @@ export default {
       });
     },
 
-    deleteItem(item) {
+    async deleteItem(item) {
       // eslint-disable-next-line no-restricted-globals
       if (confirm('Are you sure you want to delete this item?')) {
-        console.info('Delete Item: %s', item.id);
+        const resp = await fetch(`${this.$URL}/challenges/${item.id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }).catch(console.error);
+
+        if (!resp) {
+          alert('Something went wrong, try again.');
+          return;
+        }
+
+        this.loadChallenges();
       }
     },
   },

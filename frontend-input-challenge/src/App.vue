@@ -23,7 +23,7 @@
         <v-list-item
           v-for="route in routes"
           :key="route.title"
-          @click="$router.push(route.route)"
+          @click="route.route !== $router.currentRoute.path ? $router.push(route.route) : undefined"
         >
           <v-list-item-action>
             <v-list-item-title>{{ route.title }}</v-list-item-title>
