@@ -60,9 +60,9 @@
 
 <script>
 export default {
-  name: 'CreateChallenge',
+  name: 'EditChallenge',
 
-  props: ['id', 'title', 'body', 'img', 'dateStart'],
+  props: ['id', 'title', 'body', 'iconUrl', 'dateStart'],
 
   data() {
     return {
@@ -71,8 +71,8 @@ export default {
 
       etitle: this.title,
       ebody: this.body,
-      eimg: this.img,
-      edate: this.dateStart,
+      img: '',
+      edate: new Date(this.dateStart).toISOString().substr(0, 10),
     };
   },
 
@@ -85,7 +85,7 @@ export default {
       return this.etitle !== ''
         && this.ebody !== ''
         && this.edateAsUnix !== ''
-        && this.eimg !== '';
+        && this.img !== '';
     },
   },
 
@@ -102,7 +102,7 @@ export default {
       reader.onloadend = () => {
         const imgAsB64 = reader.result.replace(/^data:.+;base64,/, '');
 
-        this.eimg = imgAsB64;
+        this.img = imgAsB64;
       };
 
       reader.readAsDataURL(file);
@@ -116,12 +116,13 @@ export default {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.$token}`,
         },
         body: JSON.stringify({
           title: this.etitle,
           body: this.ebody,
-          img: this.eimg,
-          date: this.dateAsUnix,
+          img: this.img,
+          date_start: this.dateAsUnix,
         }),
       }).catch(console.error);
 

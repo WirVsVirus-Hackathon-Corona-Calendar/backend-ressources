@@ -39,7 +39,7 @@ export default {
 
       headers: [
         {
-          text: 'Datum', align: 'left', sortable: true, value: 'dateStart', width: '160',
+          text: 'Datum', align: 'left', sortable: true, value: 'date', width: '160',
         },
         {
           text: 'Titel', align: 'left', sortable: true, value: 'title',
@@ -60,7 +60,13 @@ export default {
 
   methods: {
     async loadChallenges() {
-      const resp = await fetch(`${this.$URL}/challenges`).catch(console.error);
+      const resp = await fetch(`${this.$URL}/challenges`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.$token}`,
+        },
+      }).catch(console.error);
 
       if (!resp) {
         alert('Could not load challenges.');
@@ -68,18 +74,27 @@ export default {
 
       const data = await resp.json();
 
+      // Transform data
       this.data = data.length > 0 ? data.map(
         ({
-          // eslint-disable-next-line camelcase
-          id, title, body, date_start, img,
+          /* eslint-disable camelcase */
+          id,
+          title,
+          body,
+          date_start,
+          icon_url,
         }) => ({
-          id, title, body, dateStart: new Date(date_start).toLocaleString(), img,
+          id,
+          title,
+          body,
+          dateStart: date_start,
+          iconUrl: icon_url,
+          date: new Date(date_start).toLocaleDateString(),
         }),
-      ) : [];
+      ) : []; // Save response
     },
 
     editItem(item) {
-      console.info(item);
       this.$router.push({
         name: 'EditChallenge',
         params: item,
@@ -88,11 +103,12 @@ export default {
 
     async deleteItem(item) {
       // eslint-disable-next-line no-restricted-globals
-      if (confirm('Are you sure you want to delete this item?')) {
+      if (confirm('Are you sure you want to delete this challenge?')) {
         const resp = await fetch(`${this.$URL}/challenges/${item.id}`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
+            Authorization: `Bearer ${this.$token}`,
           },
         }).catch(console.error);
 

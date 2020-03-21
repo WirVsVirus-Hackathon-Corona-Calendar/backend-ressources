@@ -112,6 +112,7 @@ export default {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.$token}`,
         },
         body: JSON.stringify({
           title: this.title,
