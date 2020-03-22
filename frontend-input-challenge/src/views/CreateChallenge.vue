@@ -46,8 +46,8 @@ export default {
     return {
       loading: false,
 
-      title: 'Challenge 1',
-      body: 'Really hard challenge',
+      title: '',
+      body: '',
       img: '',
     };
   },
@@ -83,11 +83,6 @@ export default {
         title: this.title,
         body: this.body,
         img: this.img,
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${this.$token}`,
-        },
       }).catch(console.error);
 
       if (!result) {

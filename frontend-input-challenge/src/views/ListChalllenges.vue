@@ -1,28 +1,40 @@
 <template>
-  <v-data-table
-      :headers="headers"
-      :items="data"
-      item-key="data.id"
-      sort-by="order"
-      multi-sort
-      class="elevation-1"
-    >
-      <template v-slot:item.actions="{ item }">
-        <v-icon
-          small
-          class="mr-2"
-          @click="editItem(item)"
-        >
-          edit
-        </v-icon>
-        <v-icon
-          small
-          @click="deleteItem(item)"
-        >
-          delete
-        </v-icon>
-      </template>
-    </v-data-table>
+  <v-card>
+    <v-card-title>
+      <v-text-field
+        v-model="search"
+        append-icon="mdi-magnify"
+        label="Search"
+        single-line
+        hide-details
+      ></v-text-field>
+    </v-card-title>
+    <v-data-table
+        :headers="headers"
+        :items="data"
+        :search="search"
+        item-key="data.id"
+        sort-by="order"
+        multi-sort
+        class="elevation-1"
+      >
+        <template v-slot:item.actions="{ item }">
+          <v-icon
+            small
+            class="mr-2"
+            @click="editItem(item)"
+          >
+            edit
+          </v-icon>
+          <v-icon
+            small
+            @click="deleteItem(item)"
+          >
+            delete
+          </v-icon>
+        </template>
+      </v-data-table>
+    </v-card>
 </template>
 
 <script>
@@ -97,12 +109,7 @@ export default {
     async deleteItem(item) {
       // eslint-disable-next-line no-restricted-globals
       if (confirm('Are you sure you want to delete this challenge?')) {
-        const resp = await this.$http.delete(`/challenges/${item.id}`, {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${this.$token}`,
-          },
-        }).catch(console.error);
+        const resp = await this.$http.delete(`/challenges/${item.id}`).catch(console.error);
 
         if (!resp) {
           alert('Something went wrong, try again.');
