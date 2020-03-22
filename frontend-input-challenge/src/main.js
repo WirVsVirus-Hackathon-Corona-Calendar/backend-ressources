@@ -32,6 +32,7 @@ const axiosInstance = axios.create({
   },
 });
 
+// Redirect to login when 401 occurs
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
