@@ -10,11 +10,11 @@
         required
       ></v-text-field>
 
-      <v-text-field
+      <v-textarea
         v-model="ebody"
         label="Body"
         required
-      ></v-text-field>
+      ></v-textarea>
 
       <v-img
         :src="iconUrl"

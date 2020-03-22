@@ -13,10 +13,13 @@
         :headers="headers"
         :items="data"
         :search="search"
-        item-key="data.id"
+        :item-key="data.order"
         sort-by="order"
         multi-sort
         class="elevation-1"
+        :loading="loading"
+        loading-text="Loading... Please wait"
+        show-expand
       >
         <template v-slot:item.actions="{ item }">
           <v-icon
@@ -33,6 +36,25 @@
             delete
           </v-icon>
         </template>
+
+        <template v-slot:expanded-item="{ headers, item }">
+          <td :colspan="headers.length">
+            <v-img
+              :src="item.iconUrl"
+              max-height="200"
+              max-width="200"
+            ></v-img>
+          </td>
+        </template>
+
+        <template v-slot:item.body="{ item, value }">
+          <span
+            class="d-inline-block text-truncate"
+            style="max-width: 300px;"
+          >
+            {{ value }}
+          </span>
+        </template>
       </v-data-table>
     </v-card>
 </template>
@@ -45,6 +67,8 @@ export default {
 
   data() {
     return {
+      loading: true,
+
       data: [],
 
       search: '',
@@ -72,6 +96,8 @@ export default {
 
   methods: {
     async loadChallenges() {
+      this.loading = true;
+
       const resp = await this.$http.get('/challenges').catch(console.error);
 
       if (!resp) {
@@ -97,6 +123,8 @@ export default {
           iconUrl: icon_url,
         }),
       ) : []; // Save response
+
+      this.loading = false;
     },
 
     editItem(item) {

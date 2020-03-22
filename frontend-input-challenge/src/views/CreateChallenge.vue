@@ -10,11 +10,11 @@
         required
       ></v-text-field>
 
-      <v-text-field
-        v-model="body"
-        label="Body"
-        required
-      ></v-text-field>
+      <v-textarea
+          v-model="body"
+          label="Body"
+          required
+        ></v-textarea>
 
       <v-file-input
         ref="img"
