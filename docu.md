@@ -15,7 +15,7 @@ Ihr sollte bei Aufruf des obigen Links folgenden Login Screen sehen:
 Aktuell haben wir einen gemeinsamen Nutzer für alle:
 
 * Username: *input.user*
-* Password: *Imf#123!*
+* Password: *siehe Slack Channel: 1_046_290_der_corona_kalender*
 
 ## Web App
 
